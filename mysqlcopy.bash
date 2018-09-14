@@ -20,7 +20,7 @@ if [ $# -eq 0 ]; then
     exit 1 >&2
 fi
 
-# Check if all args supplied
+# Check if *all* args supplied
 for argname in $dbname $server_user $address1 $address2; do
     if [ -z $argname ]; then
         printf "You must supply all of -d, -u, -f, and -t args\n"
@@ -60,8 +60,8 @@ ssh $address2 $bindings "mysql $dbname < $folder/dump.sql"
 # Clean up
 printf "Cleaning up transfer mess locally, and on %s and %s\n" "$address1" "$address2"
 rm "$folder/dump.sql"
-ssh $address1 $bindings "rm $folder/dump.sql"
-ssh $address2 $bindings "rm $folder/dump.sql"
+ssh $address1 "rm $folder/dump.sql"
+ssh $address2 "rm $folder/dump.sql"
 
 printf "Done.\n"
 exit 0
