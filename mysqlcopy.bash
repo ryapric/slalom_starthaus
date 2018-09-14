@@ -15,7 +15,7 @@ while getopts ":d:u:f:t:" opt; do
 done
 
 # Check if *any* args supplied
-if [ $# -ew 0 ]; then
+if [ $# -eq 0 ]; then
     printf "Y U NO PROVIDE ANY ARGS\n"
     exit 1 >&2
 fi
