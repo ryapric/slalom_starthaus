@@ -34,11 +34,11 @@ address2="$server_user"@"$address2"
 
 bindings="-L 3306:localhost:3306"
 # I'm open to changing this
-folder="/tmp/"
+folder="/tmp"
 
 # Check if .my.cnf file exists in -u home directories
 for addr in $address1 $address2; do
-    if ssh $addr "[ ! -e ~/.my.cnf ]"; then
+    if ssh $addr "[ ! -e ~${server_user}/.my.cnf ]"; then
         printf "No remote MySQL config file found on $addr"
         exit 1 >&2
     fi
@@ -50,8 +50,8 @@ ssh $address1 $bindings "mysqldump $dbname > $folder/dump.sql"
 
 # Transfer dumpfile
 printf "Transferring mysqldump to %s\n" "$address2"
-scp $address1:$folder/dump.sql "$HOME/dump.sql"
-scp "$HOME/dump.sql" $address2:$folder/dump.sql
+scp $address1:$folder/dump.sql "$folder/dump.sql"
+scp "$folder/dump.sql" $address2:$folder/dump.sql
 
 # Load dump to new DB server
 printf "Loading DB %s into mysql, as %s\n" "$dbname" "$address2"
@@ -59,8 +59,9 @@ ssh $address2 $bindings "mysql $dbname < $folder/dump.sql"
 
 # Clean up
 printf "Cleaning up transfer mess locally, and on %s and %s\n" "$address1" "$address2"
-rm "$HOME/dump.sql"
+rm "$folder/dump.sql"
 ssh $address1 $bindings "rm $folder/dump.sql"
 ssh $address2 $bindings "rm $folder/dump.sql"
 
 printf "Done.\n"
+exit 0
